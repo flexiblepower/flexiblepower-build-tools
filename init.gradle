@@ -61,7 +61,7 @@ if ((startParameter.currentDir != rootDir) || projectNames.empty) {
 if (projectNames.remove('')) {
   rootDir.eachDir {
     def projectName = it.name
-    if (!projectName.startsWith('.')) {
+    if (!projectName.startsWith('.') && !projectName.equals("cnf")) {
       projectNames += projectName
     }
   }
