@@ -22,4 +22,26 @@ subprojects {
   if (bndProject != null) {
     plugins.apply BndPlugin
   }
+  
+  repositories {
+    jcenter()
+  }
+
+  apply plugin: 'java'
+  apply plugin: 'jacoco'
+  jacoco {
+    toolVersion = "0.7.1.201405082137"
+    reportsDir = file("$buildDir/jacoco")
+  }
+  
+  jacocoTestReport {
+    reports {
+      xml.enabled true
+      csv.enabled false
+      html.destination "${buildDir}/jacoco/html"
+    }
+  }
+  
+  build.dependsOn(jacocoTestReport)
 }
+
