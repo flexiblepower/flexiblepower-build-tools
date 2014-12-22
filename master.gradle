@@ -136,7 +136,9 @@ task(generateJavadocZip, type: Zip, dependsOn: generateJavadoc) {
 
 task(distribute, dependsOn: [cleanDeployment, generateSourceZip, generateBundleZip, generateJavadocZip]) {
 	description "Generation a distribution (e.g. now in ${deploymentDir.absolutePath})"
-	ant.symlink(link: "${releaseDir}/${project.name}/${workingBranch}/LATEST",
-	            resource: "${qualifier}",
-	            overwrite: true)
+	doLast {
+		ant.symlink(link: "${releaseDir}/${project.name}/${workingBranch}/LATEST",
+		            resource: "${releaseDir}/${project.name}/${workingBranch}/${qualifier}",
+		            overwrite: true)
+	}
 }
