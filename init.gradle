@@ -110,9 +110,16 @@ def getBndProject(Workspace workspace, String projectName) {
 }
 
 // Detect the working branch in git
-def workingBranch = """git --git-dir=${rootDir}/.git 
-                           --work-tree=${rootDir}
-                           rev-parse --abbrev-ref HEAD""".execute().text.trim()
+def workingBranch = System.properties['GIT_BRANCH'];
+if(workingBranch) {
+	workingBranch = workingBranch.replaceAll(/^.*\/(.*)$/, '$1')
+}
+if(!workingBranch) {
+	workingBranch = """git --git-dir=${rootDir}/.git --work-tree=${rootDir} rev-parse --abbrev-ref HEAD""".execute().text.trim()
+}
+if(!workingBranch) {
+	workingBranch = "unknownbranch"
+}
 println "Current branch: " + workingBranch
 
 // Default release dir for unix machines
