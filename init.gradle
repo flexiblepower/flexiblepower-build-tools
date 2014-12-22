@@ -110,7 +110,7 @@ def getBndProject(Workspace workspace, String projectName) {
 }
 
 // Detect the working branch in git
-def workingBranch = System.properties['GIT_BRANCH'];
+def workingBranch = System.getenv('GIT_BRANCH')
 if(workingBranch) {
 	workingBranch = workingBranch.replaceAll(/^.*\/(.*)$/, '$1')
 }
