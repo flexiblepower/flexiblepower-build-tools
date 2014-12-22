@@ -1,26 +1,28 @@
-/*
- * Master Gradle build script
- *
- * Called by build.gradle in the root of the workspace to configure the project set.
- *
- * Depends on bndURI and bndWorkspace properties set by settings.gradle.
- */
+import aQute.bnd.deployer.repository.LocalIndexedRepo
+import java.io.*
 
 /* Add bnd as a script dependency */
 buildscript {
   dependencies {
-    classpath files(bndURI)
+    classpath files(bndURI, bndRepoURI)
   }
 }
 
 /* Load the BndPlugin class */
 apply from: buildscript.classLoader.getResource('aQute/bnd/gradle/BndPlugin.gradle')
 
+def bndProjects() {
+	subprojects.findAll { bndWorkspace.getProject(it.name) != null }
+}
+
 /* Configure the subprojects */
 subprojects {
   def bndProject = bndWorkspace.getProject(name)
   if (bndProject != null) {
     plugins.apply BndPlugin
+ 
+ 	ext.baseDir = "${releaseDir}/${name}/${workingBranch}/${qualifier}"
+ 	bndProject.setProperty("qualifier", qualifier)
  
     repositories {
       jcenter()
@@ -42,4 +44,91 @@ subprojects {
 
     build.dependsOn(jacocoTestReport)
   }
+}
+
+def deploymentDir = file("${releaseDir}/${project.name}/${workingBranch}/${qualifier}")
+
+task(cleanDeployment, type: Delete) {
+	delete "${deploymentDir.absolutePath}"
+}
+
+task(releaseBundles) {
+	dependsOn bndProjects().build
+	
+	doFirst {
+		def publishRepo = new LocalIndexedRepo();
+		def repoDir = new File(deploymentDir, "repo")
+		if(!repoDir.exists()) {
+			repoDir.mkdirs()
+		}
+		publishRepo.setProperties([
+			"local": repoDir.absolutePath,
+			"readonly": "false",
+			"pretty": "true",
+			"overwrite": "true"
+		])
+		bndProjects().each{
+			def generatedFile = "${it.buildDir}/${it.name}.jar".toString()
+			publishRepo.put(new FileInputStream(generatedFile), null) 
+		}
+	}
+}
+
+task(generateSourceZip, type: Zip) {
+	from '.'
+	include '*/src/**'
+	include '*/test/**'
+	include '*/res/**'
+	include '*/*.bnd'
+	include '*/build*.xml'
+	include 'cnf*/**'
+	exclude 'cnf*/cache/**'
+	exclude 'cnf*/gradle/**'
+	exclude 'cnf*/release/**'
+	exclude '.metadata'
+	exclude '.gradle'
+	exclude 'RemoteSystemsTempFiles'
+	destinationDir = deploymentDir
+	archiveName = "${project.name}-sources-${qualifier}.zip"
+}
+
+task(generateBundleZip, type: Zip, dependsOn: releaseBundles) {
+	from "${deploymentDir.absolutePath}/repo"
+	include '**'
+	destinationDir = deploymentDir
+	archiveName = "${project.name}-bundles-${qualifier}.zip"
+}
+
+task(generateJavadoc, type: Javadoc) {
+	def classes = fileTree('.') {
+		include '*.api*/**/*.java'
+		exclude '*.test/*'
+		exclude '**/*Test.java'
+	}
+	source = classes
+	enabled = !classes.empty 
+	destinationDir = file("${deploymentDir.absolutePath}/javadoc")
+	options {
+		classpath file(bndURI)
+		classpath fileTree('cnf/cache') {
+			include '**/*.jar'
+		}.getFiles().toArray(new File[0])
+		encoding = 'UTF-8'
+		windowTitle = project.name
+		showFromProtected()
+		addStringOption("sourcepath", "")
+	}
+}
+
+task(generateJavadocZip, type: Zip, dependsOn: generateJavadoc) {
+	from "${deploymentDir.absolutePath}/javadoc"
+	include '**'
+	destinationDir = deploymentDir
+	archiveName = "${project.name}-javadoc-${qualifier}.zip"
+}
+
+task(distribute, dependsOn: [cleanDeployment, generateSourceZip, generateBundleZip, generateJavadocZip]) {
+	description "Generation a distribution (e.g. now in ${deploymentDir.absolutePath})"
+	ant.symlink(resource: "${releaseDir}/${project.name}/${workingBranch}/LATEST",
+	            link: "${releaseDir}/${project.name}/${workingBranch}/${qualifier}")
 }

@@ -12,12 +12,13 @@ import aQute.bnd.build.Workspace
 buildscript {
   dependencies {
     def bndURI = rootDir.toURI().resolve("${bnd_cnf_shared}/bnd/biz.aQute.bnd.jar")
-	def bndlauncherURI = rootDir.toURI().resolve("${bnd_cnf_shared}/bnd/biz.aQute.launcher.jar")
-    classpath files(bndURI, bndlauncherURI)
+    def bndRepoURI = rootDir.toURI().resolve("${bnd_cnf_shared}/bnd/biz.aQute.repository.jar")
+    classpath files(bndURI, bndRepoURI)
 
     /* After the rootProject is created, pass URI to projects */
     gradle.rootProject { rootProject ->
       rootProject.ext.bndURI = bndURI
+      rootProject.ext.bndRepoURI = bndRepoURI
     }
   }
 }
@@ -108,8 +109,31 @@ def getBndProject(Workspace workspace, String projectName) {
   throw new GradleException("Project ${rootDir}/${projectName} is not a valid bnd project")
 }
 
+// Detect the working branch in git
+def workingBranch = """git --git-dir=${rootDir}/.git 
+                           --work-tree=${rootDir}
+                           rev-parse --abbrev-ref HEAD""".execute().text.trim()
+println "Current branch: " + workingBranch
+
+// Default release dir for unix machines
+def releasedir = "/var/www/html/builds"
+// If it is windows, place it in the temp directory
+if (System.properties['os.name'].toLowerCase().contains('windows')) {
+    releasedir = 'C:\\temp\\builds'
+}
+
+def qualifier = new Date().format("yy.MM");
+if("master".equals(workingBranch)) {
+	qualifier = new Date().format("yy.MM") + "-release"
+} else {
+	qualifier = "snapshot-" + new Date().format("yyyyMMdd")
+}
+
 /* After the rootProject is created, set up some properties. */
 gradle.rootProject { rootProject ->
   rootProject.ext.bndWorkspace = workspace
   rootProject.ext.cnf = rootProject.project(bnd_cnf)
+  rootProject.ext.workingBranch = workingBranch
+  rootProject.ext.releaseDir = releasedir
+  rootProject.ext.qualifier = qualifier
 }
