@@ -35,6 +35,7 @@ subprojects {
     }
   
     jacocoTestReport {
+      additionalSourceDirs = files(sourceSets.main.allJava.srcDirs)
       reports {
         xml.enabled true
         csv.enabled false
@@ -42,8 +43,6 @@ subprojects {
       }
     }
 
-    build.dependsOn(jacocoTestReport)
-    
     apply plugin: 'checkstyle'
     checkstyle {
     	configFile = file("${cnf.projectDir}/gradle/checkstyle.xml")
@@ -135,6 +134,7 @@ task(generateJavadocZip, type: Zip, dependsOn: generateJavadoc) {
 }
 
 task(distribute, dependsOn: [cleanDeployment, generateSourceZip, generateBundleZip, generateJavadocZip]) {
+	dependsOn bndProjects().jacocoTestReport
 	description "Generation a distribution (e.g. now in ${deploymentDir.absolutePath})"
 	doLast {
 		ant.symlink(link: "${releaseDir}/${project.name}/${workingBranch}/LATEST",
