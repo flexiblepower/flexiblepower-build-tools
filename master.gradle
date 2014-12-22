@@ -43,6 +43,13 @@ subprojects {
     }
 
     build.dependsOn(jacocoTestReport)
+    
+    apply plugin: 'checkstyle'
+    checkstyle {
+    	configFile = file("${cnf.projectDir}/gradle/checkstyle.xml")
+    	ignoreFailures = true
+    	showViolations = false
+    }
   }
 }
 
@@ -129,6 +136,7 @@ task(generateJavadocZip, type: Zip, dependsOn: generateJavadoc) {
 
 task(distribute, dependsOn: [cleanDeployment, generateSourceZip, generateBundleZip, generateJavadocZip]) {
 	description "Generation a distribution (e.g. now in ${deploymentDir.absolutePath})"
-	ant.symlink(resource: "${releaseDir}/${project.name}/${workingBranch}/LATEST",
-	            link: "${releaseDir}/${project.name}/${workingBranch}/${qualifier}")
+	ant.symlink(link: "${releaseDir}/${project.name}/${workingBranch}/LATEST",
+	            resource: "${qualifier}",
+	            overwrite: true)
 }
