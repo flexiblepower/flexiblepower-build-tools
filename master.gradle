@@ -177,7 +177,7 @@ def downloadRepo(ZipOutputStream zos, String url) {
 
 def copyRelease(ZipOutputStream zos) {
 	zipFiles(zos,
-	         fileTree("${deploymentDir.absolutePath}/repo").include("**/*.jar").getFiles(),
+	         fileTree("${deploymentDir.absolutePath}/repo").include("**/*.jar").exclude("**/*.test/**").getFiles(),
 	         "bundles/fpai-core")
 }
 
