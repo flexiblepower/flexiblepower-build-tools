@@ -5,7 +5,7 @@
     This configuration file was written by the eclipse-cs plugin configuration editor
 -->
 <!--
-    Checkstyle-Configuration: fpai_checks.xml
+    Checkstyle-Configuration: fpai-checks
     Description: none
 -->
 <module name="Checker">
@@ -52,9 +52,6 @@
     <module name="EmptyForIteratorPad">
       <property name="severity" value="info"/>
     </module>
-    <module name="GenericWhitespace">
-      <property name="severity" value="info"/>
-    </module>
     <module name="MethodParamPad">
       <property name="severity" value="info"/>
     </module>
@@ -81,7 +78,9 @@
     <module name="WhitespaceAround">
       <property name="severity" value="info"/>
     </module>
-    <module name="ModifierOrder"/>
+    <module name="ModifierOrder">
+      <property name="severity" value="info"/>
+    </module>
     <module name="RedundantModifier"/>
     <module name="AvoidNestedBlocks">
       <property name="severity" value="warning"/>
@@ -89,6 +88,7 @@
     </module>
     <module name="EmptyBlock">
       <property name="severity" value="info"/>
+      <property name="tokens" value="LITERAL_WHILE,LITERAL_TRY,LITERAL_FINALLY,LITERAL_DO,LITERAL_IF,LITERAL_ELSE,LITERAL_FOR,INSTANCE_INIT,STATIC_INIT,LITERAL_SWITCH"/>
     </module>
     <module name="LeftCurly">
       <property name="severity" value="warning"/>
@@ -104,13 +104,6 @@
     </module>
     <module name="EqualsHashCode">
       <property name="severity" value="warning"/>
-    </module>
-    <module name="HiddenField">
-      <property name="severity" value="info"/>
-      <property name="tokens" value="VARIABLE_DEF"/>
-      <property name="ignoreConstructorParameter" value="true"/>
-      <property name="ignoreSetter" value="true"/>
-      <property name="ignoreAbstractMethods" value="true"/>
     </module>
     <module name="IllegalInstantiation">
       <property name="severity" value="warning"/>
@@ -134,9 +127,8 @@
     <module name="FinalClass"/>
     <module name="HideUtilityClassConstructor"/>
     <module name="InterfaceIsType"/>
-    <module name="VisibilityModifier"/>
     <module name="ArrayTypeStyle">
-      <property name="severity" value="info"/>
+      <property name="severity" value="warning"/>
     </module>
     <module name="TodoComment">
       <property name="severity" value="info"/>
@@ -146,12 +138,14 @@
     </module>
     <module name="BooleanExpressionComplexity"/>
     <module name="ClassDataAbstractionCoupling"/>
-    <module name="ClassFanOutComplexity"/>
+    <module name="ClassFanOutComplexity">
+      <property name="max" value="50"/>
+    </module>
     <module name="CyclomaticComplexity">
       <property name="max" value="15"/>
     </module>
     <module name="JavaNCSS"/>
-    <module name="NPathComplexity"/>
+    <module name="SuppressWarnings"/>
   </module>
   <module name="JavadocPackage">
     <property name="severity" value="info"/>
@@ -166,4 +160,7 @@
     <property name="severity" value="warning"/>
   </module>
   <module name="FileLength"/>
+  <module name="SuppressionFilter">
+    <property name="file" value="${samedir}/suppressions.xml"/>
+  </module>
 </module>
