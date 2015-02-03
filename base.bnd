@@ -11,10 +11,10 @@ default-buildpath: \
 	slf4j.api;version="[1.7,2.0)"
 
 fpai-buildpath: \
-  ${default-buildpath},\
-  flexiblepower.api;version=latest,\
-  flexiblepower.api.ext;version=latest,\
-  flexiblepower.api.efi;version=latest
+	${default-buildpath},\
+	flexiblepower.api;version=latest,\
+	flexiblepower.api.ext;version=latest,\
+	flexiblepower.api.efi;version=latest
 	
 Bundle-Vendor: Flexiblepower Alliance Network (FAN)
 Include-Resource: res, ../cnf/gradle/LICENSE.txt
