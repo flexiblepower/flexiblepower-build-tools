@@ -114,10 +114,6 @@
     <module name="MissingSwitchDefault">
       <property name="severity" value="warning"/>
     </module>
-    <module name="RedundantThrows">
-      <property name="severity" value="warning"/>
-      <property name="allowUnchecked" value="true"/>
-    </module>
     <module name="SimplifyBooleanExpression">
       <property name="severity" value="warning"/>
     </module>
