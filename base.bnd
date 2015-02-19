@@ -5,6 +5,7 @@ javac.source: 1.6
 javac.target: 1.6
 
 default-buildpath: \
+	flexiblepower.api;version=latest,\
 	biz.aQute.bnd.annotation;version="[1.43,3.0)",\
 	osgi.core;version="[4.3,5.0)",\
 	osgi.cmpn;version="[4.3,5.0)",\
@@ -12,9 +13,14 @@ default-buildpath: \
 
 fpai-buildpath: \
 	${default-buildpath},\
-	flexiblepower.api;version=latest,\
-	flexiblepower.api.ext;version=latest,\
-	flexiblepower.api.efi;version=latest
+	flexiblepower.ral;version=latest,\
+	flexiblepower.ral.ext;version=latest,\
+	flexiblepower.ral.efi;version=latest
+
+test-buildpath: \
+	junit.osgi;version=latest,\
+	org.hamcrest.core;version=latest,\
+	org.mockito.mockito-all;version=latest
 	
 Bundle-Vendor: Flexiblepower Alliance Network (FAN)
 Include-Resource: res, ../cnf/gradle/LICENSE.txt
