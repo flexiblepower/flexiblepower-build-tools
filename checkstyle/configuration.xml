@@ -55,13 +55,6 @@
     <module name="MethodParamPad">
       <property name="severity" value="info"/>
     </module>
-    <module name="NoWhitespaceAfter">
-      <property name="severity" value="info"/>
-      <property name="tokens" value="BNOT,DEC,DOT,INC,LNOT,UNARY_MINUS,UNARY_PLUS"/>
-    </module>
-    <module name="NoWhitespaceBefore">
-      <property name="severity" value="info"/>
-    </module>
     <module name="OperatorWrap">
       <property name="severity" value="info"/>
     </module>
@@ -71,12 +64,6 @@
     <module name="TypecastParenPad">
       <property name="severity" value="info"/>
       <property name="tokens" value="RPAREN,TYPECAST"/>
-    </module>
-    <module name="WhitespaceAfter">
-      <property name="severity" value="info"/>
-    </module>
-    <module name="WhitespaceAround">
-      <property name="severity" value="info"/>
     </module>
     <module name="ModifierOrder">
       <property name="severity" value="info"/>

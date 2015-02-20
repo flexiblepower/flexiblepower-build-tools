@@ -46,10 +46,10 @@ subprojects {
 
     apply plugin: 'checkstyle'
     checkstyle {
-    	configFile = file("${cnf.projectDir}/gradle/checkstyle/configuration.xml")
-    	ignoreFailures = true
-    	showViolations = false
-	configProperties.put("samedir", "${cnf.projectDir}/gradle/checkstyle")
+      configFile = file("${cnf.projectDir}/gradle/checkstyle/configuration.xml")
+      ignoreFailures = true
+      showViolations = false
+      configProperties.put("samedir", "${cnf.projectDir}/gradle/checkstyle")
     }
   }
 }
