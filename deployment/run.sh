@@ -14,5 +14,5 @@ sudo -u fpai nohup java \
         -Dfelix.cm.dir="$DIR/config" \
         -Djava.security.policy="$DIR/etc/all.policy" \
         -Dlogback.configurationFile="$DIR/etc/logback.xml" \
-        -jar "$DIR/org.apache.felix.main.jar" \
+        -jar "$DIR/org.apache.felix.main-4.6.0.jar" \
         > /dev/null &
