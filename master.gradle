@@ -82,7 +82,9 @@ task(releaseBundles) {
 			"overwrite": "true"
 		])
 		bndProjects().each{
-			publishRepo.put(new FileInputStream(file("${it.buildDir}/${it.name}.jar")), null) 
+			bndWorkspace.getProject(it.name).getBuildFiles().each{
+				publishRepo.put(new FileInputStream(it), null)
+			}
 		}
 	}
 }
