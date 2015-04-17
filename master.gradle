@@ -1,6 +1,4 @@
-import aQute.bnd.deployer.repository.*
-import java.io.*
-import java.util.zip.*
+import aQute.bnd.deployer.repository.LocalIndexedRepo
 
 /* Add bnd as a script dependency */
 buildscript {
@@ -84,8 +82,9 @@ task(releaseBundles) {
 			"overwrite": "true"
 		])
 		bndProjects().each{
-			def generatedFile = "${it.buildDir}/${it.name}.jar".toString()
-			publishRepo.put(new FileInputStream(generatedFile), null) 
+			bndWorkspace.getProject(it.name).getBuildFiles().each{
+				publishRepo.put(new FileInputStream(it), null)
+			}
 		}
 	}
 }
@@ -143,7 +142,35 @@ task(generateJavadocZip, type: Zip, dependsOn: generateJavadoc) {
 	archiveName = "${project.name}-javadoc-${qualifier}.zip"
 }
 
-task(distribute, dependsOn: [cleanDeployment, generateSourceZip, generateBundleZip, generateJavadocZip]) {
+task(generateRuntime, type: Zip) {
+	def run = project.hasProperty('runtimeBndrunFile') ? bndWorkspace.getRun(file(runtimeBndrunFile)) : null
+	enabled = run != null
+
+	def runtimeDeploymentDir = project.hasProperty('runtimeDeploymentDir') ? project.getProperty('runtimeDeploymentDir') : "${bnd_cnf_shared}/deployment"
+
+	destinationDir = deploymentDir
+	archiveName = "${project.name}-runtime-${qualifier}.zip"
+
+	from(runtimeDeploymentDir) {
+		include("run.*")
+		fileMode = 0755
+		into('/')
+	}
+	from(runtimeDeploymentDir) {
+		exclude("run.*")
+		into('/')
+	}
+
+	if(run != null) {
+		run.getRunbundles().each { c ->
+			from(c.file) {
+				rename('.*', "bundles/${c.bundleSymbolicName}-${c.version}.jar")
+			}
+		}
+	}
+}
+
+task(distribute, dependsOn: [cleanDeployment, generateSourceZip, generateBundleZip, generateJavadocZip, generateRuntime]) {
 	dependsOn bndProjects().jacocoTestReport
 	description "Generation a distribution (e.g. now in ${deploymentDir.absolutePath})"
 	doLast {
