@@ -131,7 +131,7 @@ if (System.properties['os.name'].toLowerCase().contains('windows')) {
 
 def qualifier = new Date().format("yy.MM");
 if("master".equals(workingBranch)) {
-	qualifier = new Date().format("yy.MM") + "-release"
+	qualifier = "release-" + new Date().format("yy-MM")
 } else {
 	qualifier = "snapshot-" + new Date().format("yyyyMMdd")
 }
