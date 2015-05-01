@@ -9,9 +9,10 @@ DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 
 echo Running from $DIR
 
-java \
+sudo -u fpai nohup java \
         -Dfelix.config.properties="file:$DIR/etc/config.properties" \
         -Dfelix.cm.dir="$DIR/config" \
         -Djava.security.policy="$DIR/etc/all.policy" \
         -Dlogback.configurationFile="$DIR/etc/logback.xml" \
         -jar "$DIR/org.apache.felix.main-4.6.0.jar" \
+        > /dev/null &
