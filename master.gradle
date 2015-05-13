@@ -1,4 +1,9 @@
 import aQute.bnd.deployer.repository.LocalIndexedRepo
+import aQute.bnd.osgi.Jar
+import aQute.bnd.version.Version
+import aQute.lib.io.IO
+import aQute.lib.hex.Hex
+import java.security.MessageDigest
 
 /* Add bnd as a script dependency */
 buildscript {
@@ -66,26 +71,74 @@ task(cleanDeployment, type: Delete) {
 	}
 }
 
+class FlatReleaseRepo {
+	private String repoName;
+	private File baseDir;
+	private Set<File> storedFiles;
+
+	FlatReleaseRepo(File baseDir, String repoName) {
+		this.baseDir = baseDir;
+		this.repoName = repoName;
+		storedFiles = new HashSet<File>();
+	}
+
+	File put(File original) {
+		def jar = new Jar(original);
+		try {
+			def bsn = jar.getBsn();
+			def version = Version.parseVersion(jar.getVersion());
+			def fName = bsn + "-" + version.getWithoutQualifier() + ".jar";
+			def file = new File(baseDir, fName);
+			jar.close();
+
+			IO.copy(original, file);
+
+			storedFiles.add(file);
+			return file;
+		} finally {
+			jar.close();
+		}
+	}
+
+	void generateIndex() {
+		def provider = new aQute.bnd.deployer.repository.providers.R5RepoContentProvider();
+		def indexFile = new File(baseDir, "index.xml");
+		def out = new FileOutputStream(indexFile);
+		try {
+			provider.generateIndex(storedFiles,
+			                       out,
+			                       repoName,
+			                       baseDir.getCanonicalFile().toURI(),
+			                       true,
+			                       null,
+			                       null);
+		} finally {
+			IO.close(out);
+		}
+
+		MessageDigest sha = MessageDigest.getInstance("SHA-256");
+		IO.copy(indexFile, sha);
+		IO.store(Hex.toHexString(sha.digest()).toLowerCase(), new File(baseDir, "index.xml.sha"));
+	}
+}
+
 task(releaseBundles) {
 	dependsOn bndProjects().build
 	
 	doFirst {
-		def publishRepo = new LocalIndexedRepo();
 		def repoDir = new File(deploymentDir, "repo")
 		if(!repoDir.exists()) {
 			repoDir.mkdirs()
 		}
-		publishRepo.setProperties([
-			"local": repoDir.absolutePath,
-			"readonly": "false",
-			"pretty": "true",
-			"overwrite": "true"
-		])
+		def publishRepo = new FlatReleaseRepo(repoDir, "${project.name} ${project.qualifier}");
 		bndProjects().each{
-			bndWorkspace.getProject(it.name).getBuildFiles().each{
-				publishRepo.put(new FileInputStream(it), null)
+			if(!it.name.contains(".test")) {
+				bndWorkspace.getProject(it.name).getBuildFiles().each{
+					publishRepo.put(it)
+				}
 			}
 		}
+		publishRepo.generateIndex();
 	}
 }
 
