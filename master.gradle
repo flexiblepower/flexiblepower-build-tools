@@ -176,6 +176,7 @@ task(generateJavadoc, type: Javadoc) {
 	source = classes
 	enabled = !classes.empty 
 	destinationDir = file("${deploymentDir.absolutePath}/javadoc")
+	failOnError = false
 	options {
 		classpath file(bndURI)
 		classpath fileTree('cnf/cache') {
