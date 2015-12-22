@@ -151,7 +151,6 @@ task(generateSourceZip, type: Zip) {
 	include '*/build*.xml'
 	include 'cnf*/**'
 	exclude 'cnf*/cache/**'
-	exclude 'cnf*/gradle/**'
 	exclude 'cnf*/release/**'
 	exclude '.metadata'
 	exclude '.gradle'
