@@ -144,16 +144,16 @@ task(releaseBundles) {
 
 task(generateSourceZip, type: Zip) {
 	from '.'
-	include '*/src/**'
-	include '*/test/**'
-	include '*/res/**'
-	include '*/*.bnd'
-	include '*/build*.xml'
-	include 'cnf*/**'
+	include '*/**'
+	exclude '*/generated'
+	exclude '*/bin'
+	exclude '*/build'
+	exclude '*/bin_test'
 	exclude 'cnf*/cache/**'
 	exclude 'cnf*/release/**'
 	exclude '.metadata'
 	exclude '.gradle'
+	exclude 'build'
 	exclude 'RemoteSystemsTempFiles'
 	destinationDir = deploymentDir
 	archiveName = "${project.name}-sources-${qualifier}.zip"
