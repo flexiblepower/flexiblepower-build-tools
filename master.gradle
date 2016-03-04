@@ -152,6 +152,7 @@ task(generateSourceZip, type: Zip) {
 	exclude 'cnf*/cache/**'
 	exclude 'cnf*/release/**'
 	exclude '.metadata'
+	exclude '.recommenders'
 	exclude '.gradle'
 	exclude 'build'
 	exclude 'RemoteSystemsTempFiles'
