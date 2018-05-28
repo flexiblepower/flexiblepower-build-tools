@@ -3,9 +3,9 @@ Git-SHA: ${system-allow-fail;git rev-list -1 HEAD}
 
 default-buildpath: \
 	flexiblepower.api;version=latest,\
-	biz.aQute.bnd.annotation;version="[1.43,3.0)",\
-	osgi.core;version="[4.3.1,5.0)",\
-	osgi.cmpn;version="[4.3.1,5.0)",\
+	osgi.core;version="[6.0.0,6.1)",\
+	osgi.cmpn;version="[6.0.0,6.1)",\
+	osgi.annotation;version="[6.0.1,6.1)",\
 	slf4j.api;version="[1.7,2.0)"
 
 fpai-buildpath: \
